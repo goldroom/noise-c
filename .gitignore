@@ -17,3 +17,8 @@ missing
 test-driver
 .dirstamp
 ylwrap
+
+#Eclipse
+.cproject
+.project
+.settings/

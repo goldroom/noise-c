@@ -1727,6 +1727,35 @@ int noise_handshakestate_split
     return err;
 }
 
+int noise_handshakestate_split_without_noisecipherstate
+    (NoiseHandshakeState *state, uint8_t **send, uint8_t **receive)
+{
+    int swap;
+    int err;
+
+    /* Validate the parameters */
+    if (!state)
+        return NOISE_ERROR_INVALID_PARAM;
+    if (!send && !receive)
+        return NOISE_ERROR_INVALID_PARAM;
+    if (state->action != NOISE_ACTION_SPLIT)
+        return NOISE_ERROR_INVALID_STATE;
+    if (!state->symmetric->cipher)
+        return NOISE_ERROR_INVALID_STATE;
+
+    /* Do we need to swap the CipherState objects for the role? */
+    swap = (state->role == NOISE_ROLE_RESPONDER);
+
+    /* Split the CipherState objects out of the SymmetricState */
+    if (swap)
+        err = noise_symmetricstate_split_without_noisecipherstate(state->symmetric, receive, send);
+    else
+        err = noise_symmetricstate_split_without_noisecipherstate(state->symmetric, send, receive);
+    if (err == NOISE_ERROR_NONE)
+        state->action = NOISE_ACTION_COMPLETE;
+    return err;
+}
+
 /**
  * \brief Gets the handshake hash value once the handshake ends.
  *
