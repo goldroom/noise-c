@@ -1728,7 +1728,7 @@ int noise_handshakestate_split
 }
 
 int noise_handshakestate_split_without_noisecipherstate
-    (NoiseHandshakeState *state, uint8_t **send, uint8_t **receive)
+    (NoiseHandshakeState *state, uint8_t *send, uint8_t *receive)
 {
     int swap;
     int err;

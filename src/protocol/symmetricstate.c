@@ -573,7 +573,7 @@ int noise_symmetricstate_split
 }
 
 int noise_symmetricstate_split_without_noisecipherstate
-    (NoiseSymmetricState *state, uint8_t **k1, uint8_t **k2)
+    (NoiseSymmetricState *state, uint8_t *k1, uint8_t *k2)
 {
     uint8_t temp_k1[NOISE_MAX_HASHLEN];
     uint8_t temp_k2[NOISE_MAX_HASHLEN];
@@ -586,9 +586,9 @@ int noise_symmetricstate_split_without_noisecipherstate
     if (!k1 && !k2)
         return NOISE_ERROR_INVALID_PARAM;
 //    if (k1)
-//        *k1 = 0;
+//        k1 = 0;
 //    if (k2)
-//        *k2 = 0;
+//        k2 = 0;
 
     /* If the state has already been split, then we cannot split again */
     if (!state->cipher)
@@ -601,10 +601,10 @@ int noise_symmetricstate_split_without_noisecipherstate
         (state->hash, state->ck, hash_len, state->ck, 0,
          temp_k1, key_len, temp_k2, key_len);
 
-    *k1 = temp_k1;
-    *k2 = temp_k2;
-//    memcpy(k1, temp_k1, key_len);
-//    memcpy(k2, temp_k2, key_len);
+//    k1 = temp_k1;
+//    k2 = temp_k2;
+    memcpy(k1, temp_k1, key_len);
+    memcpy(k2, temp_k2, key_len);
 
 //    /* If we only need c2, then re-initialize the key in the internal
 //       cipher and copy it to k2 */
