@@ -572,6 +572,28 @@ int noise_symmetricstate_split
     return NOISE_ERROR_NONE;
 }
 
+/**
+ * \brief Generates encryption keys out of
+ * this SymmetricState object.
+ *
+ * \param state The SymmetricState object.
+ * \param k1 Points to the array where to copy encryption key1 to.
+ * \param k2 Points to the array where to copy encryption key2 to.
+ *
+ * \return NOISE_ERROR_NONE on success.
+ * \return NOISE_ERROR_INVALID_PARAM if \a state is NULL.
+ * \return NOISE_ERROR_INVALID_PARAM if both \a k1 and \a k2 are NULL.
+ * \return NOISE_ERROR_INVALID_STATE if the \a state has already been split.
+ *
+ * Once a SymmetricState has been split, it is effectively finished and
+ * cannot be used for future encryption or hashing operations.
+ * If those operations are invoked, the relevant functions will return
+ * NOISE_ERROR_INVALID_STATE.
+ *
+ * The \a k1 array should be used to protect messages from the initiator to
+ * the responder, and the \a k2 array should be used to protect messages
+ * from the responder to the initiator.
+ */
 int noise_symmetricstate_split_without_noisecipherstate
     (NoiseSymmetricState *state, uint8_t *k1, uint8_t *k2)
 {
@@ -601,40 +623,13 @@ int noise_symmetricstate_split_without_noisecipherstate
         (state->hash, state->ck, hash_len, state->ck, 0,
          temp_k1, key_len, temp_k2, key_len);
 
-//    k1 = temp_k1;
-//    k2 = temp_k2;
+    /* Copy both keys to provided arrays */
     memcpy(k1, temp_k1, key_len);
     memcpy(k2, temp_k2, key_len);
 
-//    /* If we only need c2, then re-initialize the key in the internal
-//       cipher and copy it to k2 */
-//    if (!k1 && k2) {
-//        noise_cipherstate_init_key(state->cipher, temp_k2, key_len);
-//        *k2 = state->cipher;
-//        state->cipher = 0;
-//        noise_clean(temp_k1, sizeof(temp_k1));
-//        noise_clean(temp_k2, sizeof(temp_k2));
-//        return NOISE_ERROR_NONE;
-//    }
-//
-//    /* Split a copy out of the cipher and give it the second key.
-//       We don't need to do this if the second CipherSuite is not required */
-//    if (k2) {
-//        *k2 = (*(state->cipher->create))();
-//        if (!(*k2)) {
-//            noise_clean(temp_k1, sizeof(temp_k1));
-//            noise_clean(temp_k2, sizeof(temp_k2));
-//            return NOISE_ERROR_NO_MEMORY;
-//        }
-//        noise_cipherstate_init_key(*c2, temp_k2, key_len);
-//    }
-//
-//    /* Re-initialize the key in the internal cipher and copy it to c1 */
-//    noise_cipherstate_init_key(state->cipher, temp_k1, key_len);
-//    *k1 = state->cipher;
-//    state->cipher = 0;
-//    noise_clean(temp_k1, sizeof(temp_k1));
-//    noise_clean(temp_k2, sizeof(temp_k2));
+    state->cipher = 0;
+    noise_clean(temp_k1, sizeof(temp_k1));
+    noise_clean(temp_k2, sizeof(temp_k2));
 
     return NOISE_ERROR_NONE;
 }
