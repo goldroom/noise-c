@@ -1727,6 +1727,32 @@ int noise_handshakestate_split
     return err;
 }
 
+/**
+ * \brief Splits the transport encryption arrays out of
+ * this HandshakeState object.
+ *
+ * \param state The HandshakeState object.
+ * \param send Points to the array which will be used to encrypt and send
+ * packets from local to remote.
+ * \param receive Points to the array which will be used to decrypt and
+ * receive packets from the remote to local.
+ *
+ * \return NOISE_ERROR_NONE on success.
+ * \return NOISE_ERROR_INVALID_PARAM if \a state is NULL.
+ * \return NOISE_ERROR_INVALID_PARAM if both \a send and \a receive are NULL.
+ * \return NOISE_ERROR_INVALID_STATE if the \a state has already been split
+ * or the handshake protocol has not completed successfully yet.
+ *
+ * Once a HandshakeState has been split, it is effectively finished and
+ * cannot be used for future handshake operations.  If those operations are
+ * invoked, the relevant functions will return NOISE_ERROR_INVALID_STATE.
+ *
+ * The \a send array should be used to protect messages from the local
+ * side to the remote side, and the \a receive array should be used to
+ * protect messages from the remote side to the local side.
+ *
+ * \sa noise_handshakestate_get_handshake_hash()
+ */
 int noise_handshakestate_split_without_noisecipherstate
     (NoiseHandshakeState *state, uint8_t *send, uint8_t *receive)
 {

@@ -573,8 +573,7 @@ int noise_symmetricstate_split
 }
 
 /**
- * \brief Generates encryption keys out of
- * this SymmetricState object.
+ * \brief Generates encryption keys out of this SymmetricState object.
  *
  * \param state The SymmetricState object.
  * \param k1 Points to the array where to copy encryption key1 to.
